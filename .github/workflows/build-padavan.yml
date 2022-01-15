@@ -32,7 +32,9 @@ jobs:
         pkg-config zlib1g-dev libgmp3-dev libmpc-dev libmpfr-dev libncurses5-dev libltdl-dev wget g++
     - name: Clone source code
       run: |
-        git clone https://github.com/silveryxx/rt-n56u.git /opt/rt-n56u
+        git clone https://github.com/silveryxx/Padavan-R6800.git /opt/rt-n56u
+        cd /opt/rt-n56u
+        sh ./trunk/tools/shellcheck.sh
         cd /opt/rt-n56u/toolchain-mipsel
         sh dl_toolchain.sh
         mkdir -p /opt/images/
@@ -43,7 +45,6 @@ jobs:
         cd /opt/rt-n56u/trunk/user/shared
         sed -i 's/192.168.2/192.168.1/g' defaults.h
         sed -i 's/ASUS/Silvery/g' defaults.h
-        sed -i 's/rootadmin/Silvery/g' defaults.h
         sed -i 's/1234567890/mkd1230.+/g' defaults.h
         sed -i 's/147852369/Feng*963./g' defaults.h
         cd /opt/rt-n56u/trunk
