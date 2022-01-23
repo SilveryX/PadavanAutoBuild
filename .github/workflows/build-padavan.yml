@@ -34,17 +34,20 @@ jobs:
     - name: Clone source code
       run: |
         git clone https://github.com/silveryxx/Padavan.git /opt/rt-n56u
-        mkdir -p /opt/images/
     - name: Run shellcheck
+      run: |
         cd /opt/rt-n56u
         sh ./trunk/tools/shellcheck.sh
     - name: Prepare toolchain
+      run: |
         cd /opt/rt-n56u/toolchain-mipsel
         sh dl_toolchain.sh
     - name: Build Firmware
       env:
         TNAME: "R6800"
+        images_dir: /opt/images
       run: |
+        mkdir -p ${images_dir}
         cd /opt/rt-n56u/trunk/user/shared
         sed -i 's/192.168.2/192.168.1/g' defaults.h
         sed -i 's/ASUS/Silvery/g' defaults.h
@@ -65,14 +68,12 @@ jobs:
       with:
         name: Padavan-packages
         path: /opt/images
-    - name: Create release
-      id: create_release
-      uses: ncipollo/release-action@v1.8.0
+    - name: Upload images to Releases
+      if: always()
+      uses: svenstaro/upload-release-action@2.2.0
       with:
-        name: Padavan-${{ env.TNAME }}
-        allowUpdates: true
-        tag: ${{ env.TNAME }}
-        commit: master
-        replacesArtifacts: true
-        token: ${{ secrets.workflow_token }}
-        artifacts: /opt/images/*.trx
+        repo_token: ${{ secrets.workflow_token }}
+        file: /opt/images/*.trx
+        tag: ${{ github.ref }}
+        overwrite: true
+        file_glob: true
