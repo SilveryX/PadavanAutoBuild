@@ -44,7 +44,7 @@ jobs:
         sh dl_toolchain.sh
     - name: Build Firmware
       env:
-        TNAME: "R6800"
+        TNAME: "K2P"
         images_dir: /opt/images
       run: |
         mkdir -p ${images_dir}
