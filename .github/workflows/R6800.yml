@@ -9,7 +9,9 @@ jobs:
   build:
     runs-on: ubuntu-20.04
     if: github.event.repository.owner.id == github.event.sender.id
-
+    env:
+      PID_NAME: "R6800"
+      images_dir: /opt/images
     steps:
     - name: Checkout
       uses: actions/checkout@master
@@ -35,9 +37,6 @@ jobs:
         cd /opt/rt-n56u/toolchain-mipsel
         sh dl_toolchain.sh
     - name: Build Firmware
-      env:
-        PID_NAME: "R6800"
-        images_dir: /opt/images
       run: |
         mkdir -p ${images_dir}
         cd /opt/rt-n56u/trunk/user/shared
