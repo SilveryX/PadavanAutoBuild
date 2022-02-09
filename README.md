@@ -1,1 +1,1 @@
-# R6800 padavan auto build
+# Padavan firmware auto build
