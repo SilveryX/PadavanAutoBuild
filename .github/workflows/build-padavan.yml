@@ -23,21 +23,16 @@ jobs:
     - name: Checkout
       uses: actions/checkout@master
     - name: Initialization environment
-      env:
-        DEBIAN_FRONTEND: noninteractive
       run: |
         sudo apt update
-        sudo apt install unzip libtool-bin curl cmake gperf gawk flex bison nano xxd \
-         fakeroot kmod cpio git python3-docutils gettext automake autopoint \
-         texinfo build-essential help2man pkg-config zlib1g-dev libgmp3-dev \
-         libmpc-dev libmpfr-dev libncurses5-dev libltdl-dev wget libc-dev-bin
+        sudo apt install libtool-bin gperf python3-docutils autopoint gettext
     - name: Clone source code
       run: |
-        git clone https://github.com/silveryxx/padavan-4.4 /opt/rt-n56u
+        git clone https://github.com/SilveryX/Padavan /opt/rt-n56u
     - name: Run shellcheck
       run: |
-        cd /opt/rt-n56u
-        sh ./trunk/tools/shellcheck.sh
+        cd /opt/rt-n56u/trunk/tools
+        sh ./shellcheck.sh
     - name: Prepare toolchain
       run: |
         cd /opt/rt-n56u/toolchain-mipsel
@@ -50,9 +45,13 @@ jobs:
         mkdir -p ${images_dir}
         cd /opt/rt-n56u/trunk/user/shared
         sed -i 's/192.168.2/192.168.1/g' defaults.h
-        sed -i 's/ASUS/Silvery/g' defaults.h
         sed -i 's/1234567890/mkd1230.+/g' defaults.h
-        sed -i 's/147852369/Feng*963./g' defaults.h
+        sed -i 's/BOARD_PID "_%s"/"Silvery"/g' defaults.h
+        sed -i 's/BOARD_PID "_5G_%s"/Silvery5G/g' defaults.h
+        sed -i 's/BOARD_PID "_GUEST_%s"/Silvery_GUEST/g' defaults.h
+        sed -i 's/BOARD_PID "_GUEST_5G_%s"/Silvery_GUEST5G/g' defaults.h
+        sed -i 's/#define SYS_USER_ROOT		"admin"/#define SYS_USER_ROOT		"Silvery"/g' defaults.h
+        sed -i 's/#define DEF_ROOT_PASSWORD	"admin"/#define DEF_ROOT_PASSWORD	"Feng*963."/g' defaults.h
         cd /opt/rt-n56u/trunk
         if [ ! -f configs/templates/$TNAME.config ] ; then
         echo "configs/templates/$TNAME.config not found "
@@ -64,16 +63,16 @@ jobs:
         sudo mv -f images/*.trx /opt/images/
     - name : Upload packages
       uses: actions/upload-artifact@master
-      if: always()
+      if: ${{ github.event_name != 'release' && success() }}
       with:
         name: Padavan-packages
-        path: /opt/images
+        path: /opt/images/*.trx
     - name: Upload images to Releases
-      if: always()
+      if: ${{ github.event_name != 'release' && success() }}
       uses: svenstaro/upload-release-action@2.2.0
       with:
         repo_token: ${{ secrets.workflow_token }}
         file: /opt/images/*.trx
-        tag: ${{ github.ref }}
+        tag: $TNAME
         overwrite: true
         file_glob: true
