@@ -21,8 +21,8 @@ jobs:
         sudo apt install libtool-bin gperf python3-docutils autopoint gettext
     - name: Clone source code
       run: |
-        # git clone https://github.com/SilveryX/Padavan /opt/rt-n56u
-        git clone https://github.com/MeIsReallyBa/padavan-4.4 /opt/rt-n56u
+        git clone https://github.com/SilveryX/Padavan /opt/rt-n56u
+        # git clone https://github.com/MeIsReallyBa/padavan-4.4 /opt/rt-n56u
         git clone https://github.com/SilveryX/PadavanAutoBuild /opt/PadavanAutoBuild
         mv -f /opt/PadavanAutoBuild/R6800 /opt/rt-n56u/trunk/configs/boards/R6800
         mv -f /opt/PadavanAutoBuild/R6800.config /opt/rt-n56u/trunk/configs/templates/R6800.config
