@@ -154,6 +154,7 @@ jobs:
       with:
         repo_token: ${{ secrets.workflow_token }}
         file: /opt/images/*.trx
+        release_name: ${{ env.PID_NAME }}
         tag: ${{ env.PID_NAME }}
         overwrite: true
         file_glob: true
