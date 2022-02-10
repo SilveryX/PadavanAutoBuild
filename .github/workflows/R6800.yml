@@ -21,7 +21,7 @@ jobs:
         sudo apt install libtool-bin gperf python3-docutils autopoint gettext
     - name: Clone source code
       run: |
-        git clone https://github.com/SilveryX/Padavan /opt/rt-n56u
+        git clone https://github.com/SilveryX/PadavanNewKernel /opt/rt-n56u
         # git clone https://github.com/MeIsReallyBa/padavan-4.4 /opt/rt-n56u
         git clone https://github.com/SilveryX/PadavanAutoBuild /opt/PadavanAutoBuild
         mv -f /opt/PadavanAutoBuild/R6800 /opt/rt-n56u/trunk/configs/boards/R6800
@@ -144,7 +144,7 @@ jobs:
         echo "CONFIG_FIRMWARE_INCLUDE_TUNSAFE=n" >> .config #TUNSAFE
         
         echo "CONFIG_FIRMWARE_INCLUDE_ZEROTIER=n" >> .config #zerotier ~1.3M
-        echo "CONFIG_FIRMWARE_INCLUDE_ALDRIVER=n" >> .config #阿里云盘
+        echo "CONFIG_FIRMWARE_INCLUDE_ALDRIVER=y" >> .config #阿里云盘
 
         sudo ./clear_tree
         sudo ./build_firmware_modify $PID_NAME 0
