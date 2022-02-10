@@ -1,4 +1,4 @@
-name: Build R6800 Padavan Firmware
+name: Build NEWIFI3 Padavan Firmware
 
 on: 
   workflow_dispatch:
@@ -95,7 +95,7 @@ jobs:
         ######################################################################
         #以下选项是定义你需要的功能（y=集成,n=忽略），重新写入到.config文件
         ######################################################################
-        echo "CONFIG_FIRMWARE_INCLUDE_SFE=y" >> .config
+        echo "CONFIG_FIRMWARE_INCLUDE_SFE=n" >> .config
         echo "CONFIG_FIRMWARE_INCLUDE_OPENSSL_EXE=y" >> .config
         echo "CONFIG_FIRMWARE_INCLUDE_CURL=y" >> .config
         echo "CONFIG_FIRMWARE_INCLUDE_SCUTCLIENT=n" >> .config
@@ -118,15 +118,15 @@ jobs:
         echo "CONFIG_FIRMWARE_INCLUDE_SOCAT=y" >> .config
         echo "CONFIG_FIRMWARE_INCLUDE_SRELAY=y" >> .config
         echo "CONFIG_FIRMWARE_INCLUDE_MENTOHUST=n" >> .config
-        echo "CONFIG_FIRMWARE_INCLUDE_WIREGUARD=y" >> .config
-        echo "CONFIG_FIRMWARE_INCLUDE_SHADOWSOCKS=y" >> .config #科学上网插件，选择n后全部有关插件都不集成
-        echo "CONFIG_FIRMWARE_INCLUDE_XRAY=y" >> .config #集成xray执行文件  ~4.5M
+        # echo "CONFIG_FIRMWARE_INCLUDE_WIREGUARD=y" >> .config
+        echo "CONFIG_FIRMWARE_INCLUDE_SHADOWSOCKS=n" >> .config #科学上网插件，选择n后全部有关插件都不集成
+        echo "CONFIG_FIRMWARE_INCLUDE_XRAY=n" >> .config #集成xray执行文件  ~4.5M
         echo "CONFIG_FIRMWARE_INCLUDE_V2RAY=n" >> .config #集成v2ray执行文件
-        echo "CONFIG_FIRMWARE_INCLUDE_TROJAN=y" >> .config #集成trojan执行文件  ~0.5M
-        echo "CONFIG_FIRMWARE_INCLUDE_SSOBFS=y" >> .config #simple-obfs混淆插件
+        echo "CONFIG_FIRMWARE_INCLUDE_TROJAN=n" >> .config #集成trojan执行文件  ~0.5M
+        echo "CONFIG_FIRMWARE_INCLUDE_SSOBFS=n" >> .config #simple-obfs混淆插件
         
         echo "CONFIG_FIRMWARE_INCLUDE_ALIDDNS=y" >> .config #阿里DDNS
-        echo "CONFIG_FIRMWARE_INCLUDE_DDNSTO=y" >> .config #ddnsto  ~0.5M
+        # echo "CONFIG_FIRMWARE_INCLUDE_DDNSTO=n" >> .config #ddnsto  ~0.5M
         echo "CONFIG_FIRMWARE_INCLUDE_SMARTDNS=n" >> .config #smartdns
         echo "CONFIG_FIRMWARE_INCLUDE_SMARTDNSBIN=n" >> .config #smartdns二进制文件
         echo "CONFIG_FIRMWARE_INCLUDE_ADGUARDHOME=n" >> .config
