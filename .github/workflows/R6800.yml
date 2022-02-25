@@ -113,9 +113,9 @@ jobs:
         echo "CONFIG_FIRMWARE_INCLUDE_SOFTETHERVPN_CLIENT=n" >> .config
         echo "CONFIG_FIRMWARE_INCLUDE_SOFTETHERVPN_CMD=n" >> .config
         echo "CONFIG_FIRMWARE_INCLUDE_VLMCSD=y" >> .config
-        echo "CONFIG_FIRMWARE_INCLUDE_TTYD=y" >> .config
+        echo "CONFIG_FIRMWARE_INCLUDE_TTYD=n" >> .config
         echo "CONFIG_FIRMWARE_INCLUDE_LRZSZ=n" >> .config
-        echo "CONFIG_FIRMWARE_INCLUDE_HTOP=y" >> .config
+        echo "CONFIG_FIRMWARE_INCLUDE_HTOP=n" >> .config
         echo "CONFIG_FIRMWARE_INCLUDE_NANO=y" >> .config
         echo "CONFIG_FIRMWARE_INCLUDE_IPERF3=y" >> .config
         echo "CONFIG_FIRMWARE_INCLUDE_DUMP1090=n" >> .config
