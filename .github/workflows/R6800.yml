@@ -28,6 +28,7 @@ jobs:
         mv -f /opt/PadavanAutoBuild/R6800.config /opt/rt-n56u/trunk/configs/templates/R6800.config
         mv -f /opt/PadavanAutoBuild/CN.dict /opt/rt-n56u/trunk/user/www/dict/CN.dict
         mv -f /opt/PadavanAutoBuild/asus_logo.png /opt/rt-n56u/trunk/user/www/n56u_ribbon_fixed/asus_logo.png
+        mv -f /opt/PadavanAutoBuild/defaults.h /opt/rt-n56u/trunk/user/shared/defaults.h
     - name: Run shellcheck
       run: |
         cd /opt/rt-n56u/trunk/tools
@@ -39,15 +40,6 @@ jobs:
     - name: Build Firmware
       run: |
         mkdir -p ${images_dir}
-        cd /opt/rt-n56u/trunk/user/shared
-        sed -i 's/192.168.2/192.168.1/g' defaults.h
-        sed -i 's/1234567890/mkd1230.+/g' defaults.h
-        sed -i 's/BOARD_PID "_%s"/"Silvery"/g' defaults.h
-        sed -i 's/BOARD_PID "_5G_%s"/"Silvery5G"/g' defaults.h
-        sed -i 's/BOARD_PID "_GUEST_%s"/"Silvery_GUEST"/g' defaults.h
-        sed -i 's/BOARD_PID "_GUEST_5G_%s"/"Silvery_GUEST5G"/g' defaults.h
-        sed -i 's/#define SYS_USER_ROOT		"admin"/#define SYS_USER_ROOT		"Silvery"/g' defaults.h
-        sed -i 's/#define DEF_ROOT_PASSWORD	"admin"/#define DEF_ROOT_PASSWORD	"Feng*963."/g' defaults.h
         cd /opt/rt-n56u/trunk
         if [ ! -f configs/templates/$PID_NAME.config ] ; then
         echo "configs/templates/$PID_NAME.config not found "
