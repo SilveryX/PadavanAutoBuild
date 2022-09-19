@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-20.04
     if: github.event.repository.owner.id == github.event.sender.id
     env:
-      PID_NAME: "R6800"
+      PID_NAME: "NETGEAR-R6800"
       images_dir: /opt/images
     steps:
     - name: Checkout
@@ -21,11 +21,11 @@ jobs:
         sudo apt install libtool-bin gperf python3-docutils autopoint gettext
     - name: Clone source code
       run: |
-        # git clone https://github.com/SilveryX/PadavanNewKernel /opt/rt-n56u
-        git clone https://github.com/MeIsReallyBa/padavan-4.4 /opt/rt-n56u
+        git clone https://github.com/SilveryX/PadavanOldKernel /opt/rt-n56u
+        # git clone https://github.com/MeIsReallyBa/padavan-4.4 /opt/rt-n56u
         git clone https://github.com/SilveryX/PadavanAutoBuild /opt/PadavanAutoBuild
-        mv -f /opt/PadavanAutoBuild/R6800 /opt/rt-n56u/trunk/configs/boards/R6800
-        mv -f /opt/PadavanAutoBuild/R6800.config /opt/rt-n56u/trunk/configs/templates/R6800.config
+        # mv -f /opt/PadavanAutoBuild/R6800 /opt/rt-n56u/trunk/configs/boards/R6800
+        # mv -f /opt/PadavanAutoBuild/R6800.config /opt/rt-n56u/trunk/configs/templates/R6800.config
         mv -f /opt/PadavanAutoBuild/CN.dict /opt/rt-n56u/trunk/user/www/dict/CN.dict
         mv -f /opt/PadavanAutoBuild/asus_logo.png /opt/rt-n56u/trunk/user/www/n56u_ribbon_fixed/asus_logo.png
         mv -f /opt/PadavanAutoBuild/defaults.h /opt/rt-n56u/trunk/user/shared/defaults.h
@@ -94,7 +94,7 @@ jobs:
         ######################################################################
         #以下选项是定义你需要的功能（y=集成,n=忽略），重新写入到.config文件
         ######################################################################
-        echo "CONFIG_FIRMWARE_INCLUDE_SFE=y" >> .config
+        echo "CONFIG_FIRMWARE_INCLUDE_SFE=n" >> .config
         echo "CONFIG_FIRMWARE_INCLUDE_OPENSSL_EXE=y" >> .config
         echo "CONFIG_FIRMWARE_INCLUDE_CURL=y" >> .config
         echo "CONFIG_FIRMWARE_INCLUDE_SCUTCLIENT=n" >> .config
@@ -117,7 +117,7 @@ jobs:
         echo "CONFIG_FIRMWARE_INCLUDE_SOCAT=y" >> .config
         echo "CONFIG_FIRMWARE_INCLUDE_SRELAY=y" >> .config
         echo "CONFIG_FIRMWARE_INCLUDE_MENTOHUST=n" >> .config
-        echo "CONFIG_FIRMWARE_INCLUDE_WIREGUARD=y" >> .config
+        # echo "CONFIG_FIRMWARE_INCLUDE_WIREGUARD=y" >> .config
         echo "CONFIG_FIRMWARE_INCLUDE_SHADOWSOCKS=n" >> .config #科学上网插件，选择n后全部有关插件都不集成
         echo "CONFIG_FIRMWARE_INCLUDE_XRAY=n" >> .config #集成xray执行文件  ~4.5M
         echo "CONFIG_FIRMWARE_INCLUDE_V2RAY=n" >> .config #集成v2ray执行文件
