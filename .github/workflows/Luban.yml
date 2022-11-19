@@ -1,0 +1,163 @@
+name: Build Luban Padavan Firmware
+
+on: 
+  workflow_dispatch:
+  watch:
+    types: [started]
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+    if: github.event.repository.owner.id == github.event.sender.id
+    env:
+      PID_NAME: "JD-LUBAN"
+      images_dir: /opt/images
+    steps:
+    - name: Checkout
+      uses: actions/checkout@master
+    - name: Initialization environment
+      run: |
+        sudo apt update
+        sudo apt install libtool-bin gperf python3-docutils autopoint gettext
+    - name: Clone source code
+      run: |
+        git clone --depth=1 https://github.com/flowlife/padavan-4.4.git /opt/rt-n56u
+        mv -f CN.dict /opt/rt-n56u/trunk/user/www/dict/CN.dict
+        mv -f asus_logo.png /opt/rt-n56u/trunk/user/www/n56u_ribbon_fixed/asus_logo.png
+        mv -f defaults.h /opt/rt-n56u/trunk/user/shared/defaults.h
+        mv -f Makefile /opt/rt-n56u/trunk/user/www/Makefile        
+    - name: modify code
+      run: |
+        mv padavan/*.patch /opt/rt-n56u/  
+        cd /opt/rt-n56u
+        git apply main...hanwckf_padavan-4.4_main.patch
+        git apply xmc.patch
+        git apply luban.patch
+
+    - name: Run shellcheck
+      run: |
+        cd /opt/rt-n56u/trunk/tools
+        sh ./shellcheck.sh
+    - name: Prepare toolchain
+      run: |
+        cd /opt/rt-n56u/toolchain-mipsel
+        sh dl_toolchain.sh
+    - name: Build Firmware
+      run: |
+        mkdir -p ${images_dir}
+        cd /opt/rt-n56u/trunk
+        if [ ! -f configs/templates/$PID_NAME.config ] ; then
+        echo "configs/templates/$PID_NAME.config not found "
+        exit 1
+        fi
+        cp -f configs/templates/$PID_NAME.config .config
+        ################################################################################################
+        #因不同型号配置功能不一样，所以先把配置项删除，如果你自己要添加其他的，也要写上删除这一条，切记！！！
+        ################################################################################################
+        sed -i '/CONFIG_FIRMWARE_INCLUDE_SFE/d' .config
+        sed -i '/CONFIG_FIRMWARE_INCLUDE_OPENSSL_EXE/d' .config
+        sed -i '/CONFIG_FIRMWARE_INCLUDE_CURL/d' .config
+        sed -i '/CONFIG_FIRMWARE_INCLUDE_SCUTCLIENT/d' .config
+        sed -i '/CONFIG_FIRMWARE_INCLUDE_GDUT_DRCOM/d' .config
+        sed -i '/CONFIG_FIRMWARE_INCLUDE_DOGCOM/d' .config
+        sed -i '/CONFIG_FIRMWARE_INCLUDE_MINIEAP/d' .config
+        sed -i '/CONFIG_FIRMWARE_INCLUDE_NJIT_CLIENT/d' .config
+        sed -i '/CONFIG_FIRMWARE_INCLUDE_SOFTETHERVPN_SERVER/d' .config
+        sed -i '/CONFIG_FIRMWARE_INCLUDE_SOFTETHERVPN_CLIENT/d' .config
+        sed -i '/CONFIG_FIRMWARE_INCLUDE_SOFTETHERVPN_CMD/d' .config
+        sed -i '/CONFIG_FIRMWARE_INCLUDE_VLMCSD/d' .config
+        sed -i '/CONFIG_FIRMWARE_INCLUDE_TTYD/d' .config
+        sed -i '/CONFIG_FIRMWARE_INCLUDE_LRZSZ/d' .config
+        sed -i '/CONFIG_FIRMWARE_INCLUDE_HTOP/d' .config
+        sed -i '/CONFIG_FIRMWARE_INCLUDE_NANO/d' .config
+        sed -i '/CONFIG_FIRMWARE_INCLUDE_IPERF3/d' .config
+        sed -i '/CONFIG_FIRMWARE_INCLUDE_DUMP1090/d' .config
+        sed -i '/CONFIG_FIRMWARE_INCLUDE_RTL_SDR/d' .config
+        sed -i '/CONFIG_FIRMWARE_INCLUDE_MTR/d' .config
+        sed -i '/CONFIG_FIRMWARE_INCLUDE_SOCAT/d' .config
+        sed -i '/CONFIG_FIRMWARE_INCLUDE_SRELAY/d' .config
+        sed -i '/CONFIG_FIRMWARE_INCLUDE_MENTOHUST/d' .config
+        sed -i '/CONFIG_FIRMWARE_INCLUDE_WIREGUARD/d' .config
+        sed -i '/CONFIG_FIRMWARE_INCLUDE_SHADOWSOCKS/d' .config #科学上网插件，选择n后全部有关插件都不集成
+        sed -i '/CONFIG_FIRMWARE_INCLUDE_XRAY/d' .config #集成xray执行文件  ~4.5M
+        sed -i '/CONFIG_FIRMWARE_INCLUDE_V2RAY/d' .config #集成v2ray执行文件
+        sed -i '/CONFIG_FIRMWARE_INCLUDE_TROJAN/d' .config #集成trojan执行文件  ~0.5M
+        sed -i '/CONFIG_FIRMWARE_INCLUDE_SSOBFS/d' .config #simple-obfs混淆插件
+        sed -i '/CONFIG_FIRMWARE_INCLUDE_ALIDDNS/d' .config #阿里DDNS
+        sed -i '/CONFIG_FIRMWARE_INCLUDE_DDNSTO/d' .config #ddnsto  ~0.5M
+        sed -i '/CONFIG_FIRMWARE_INCLUDE_SMARTDNS/d' .config #smartdns
+        sed -i '/CONFIG_FIRMWARE_INCLUDE_SMARTDNSBIN/d' .config #smartdns二进制文件
+        sed -i '/CONFIG_FIRMWARE_INCLUDE_ADGUARDHOME/d' .config        
+        sed -i '/CONFIG_FIRMWARE_INCLUDE_DNSFORWARDER/d' .config #DNSFORWARDER
+        sed -i '/CONFIG_FIRMWARE_INCLUDE_ADBYBY/d' .config #adbyby plus+
+        sed -i '/CONFIG_FIRMWARE_INCLUDE_FRPC/d' .config #内网穿透FRPC
+        sed -i '/CONFIG_FIRMWARE_INCLUDE_FRPS/d' .config #内网穿透FRPS
+        sed -i '/CONFIG_FIRMWARE_INCLUDE_TUNSAFE/d' .config #TUNSAFE
+        sed -i '/CONFIG_FIRMWARE_INCLUDE_ZEROTIER/d' .config #zerotier ~1.3M
+        sed -i '/CONFIG_FIRMWARE_INCLUDE_ALDRIVER/d' .config #阿里云盘
+        ######################################################################
+        #以下选项是定义你需要的功能（y=集成,n=忽略），重新写入到.config文件
+        ######################################################################
+        echo "CONFIG_FIRMWARE_INCLUDE_SFE=n" >> .config
+        echo "CONFIG_FIRMWARE_INCLUDE_OPENSSL_EXE=y" >> .config
+        echo "CONFIG_FIRMWARE_INCLUDE_CURL=y" >> .config
+        echo "CONFIG_FIRMWARE_INCLUDE_SCUTCLIENT=n" >> .config
+        echo "CONFIG_FIRMWARE_INCLUDE_GDUT_DRCOM=n" >> .config
+        echo "CONFIG_FIRMWARE_INCLUDE_DOGCOM=n" >> .config
+        echo "CONFIG_FIRMWARE_INCLUDE_MINIEAP=n" >> .config
+        echo "CONFIG_FIRMWARE_INCLUDE_NJIT_CLIENT=n" >> .config
+        echo "CONFIG_FIRMWARE_INCLUDE_SOFTETHERVPN_SERVER=n" >> .config
+        echo "CONFIG_FIRMWARE_INCLUDE_SOFTETHERVPN_CLIENT=n" >> .config
+        echo "CONFIG_FIRMWARE_INCLUDE_SOFTETHERVPN_CMD=n" >> .config
+        echo "CONFIG_FIRMWARE_INCLUDE_VLMCSD=y" >> .config
+        echo "CONFIG_FIRMWARE_INCLUDE_TTYD=n" >> .config
+        echo "CONFIG_FIRMWARE_INCLUDE_LRZSZ=n" >> .config
+        echo "CONFIG_FIRMWARE_INCLUDE_HTOP=n" >> .config
+        echo "CONFIG_FIRMWARE_INCLUDE_NANO=y" >> .config
+        echo "CONFIG_FIRMWARE_INCLUDE_IPERF3=y" >> .config
+        echo "CONFIG_FIRMWARE_INCLUDE_DUMP1090=n" >> .config
+        echo "CONFIG_FIRMWARE_INCLUDE_RTL_SDR=n" >> .config
+        echo "CONFIG_FIRMWARE_INCLUDE_MTR=y" >> .config
+        echo "CONFIG_FIRMWARE_INCLUDE_SOCAT=y" >> .config
+        echo "CONFIG_FIRMWARE_INCLUDE_SRELAY=y" >> .config
+        echo "CONFIG_FIRMWARE_INCLUDE_MENTOHUST=n" >> .config
+        # echo "CONFIG_FIRMWARE_INCLUDE_WIREGUARD=y" >> .config
+        echo "CONFIG_FIRMWARE_INCLUDE_SHADOWSOCKS=n" >> .config #科学上网插件，选择n后全部有关插件都不集成
+        echo "CONFIG_FIRMWARE_INCLUDE_XRAY=n" >> .config #集成xray执行文件  ~4.5M
+        echo "CONFIG_FIRMWARE_INCLUDE_V2RAY=n" >> .config #集成v2ray执行文件
+        echo "CONFIG_FIRMWARE_INCLUDE_TROJAN=n" >> .config #集成trojan执行文件  ~0.5M
+        echo "CONFIG_FIRMWARE_INCLUDE_SSOBFS=n" >> .config #simple-obfs混淆插件
+        
+        echo "CONFIG_FIRMWARE_INCLUDE_ALIDDNS=y" >> .config #阿里DDNS
+        echo "CONFIG_FIRMWARE_INCLUDE_DDNSTO=y" >> .config #ddnsto  ~0.5M
+        echo "CONFIG_FIRMWARE_INCLUDE_SMARTDNS=n" >> .config #smartdns
+        echo "CONFIG_FIRMWARE_INCLUDE_SMARTDNSBIN=n" >> .config #smartdns二进制文件
+        echo "CONFIG_FIRMWARE_INCLUDE_ADGUARDHOME=n" >> .config
+        
+        echo "CONFIG_FIRMWARE_INCLUDE_DNSFORWARDER=n" >> .config #DNSFORWARDER
+        echo "CONFIG_FIRMWARE_INCLUDE_ADBYBY=n" >> .config #adbyby plus+
+        echo "CONFIG_FIRMWARE_INCLUDE_FRPC=n" >> .config #内网穿透FRPC
+        echo "CONFIG_FIRMWARE_INCLUDE_FRPS=n" >> .config #内网穿透FRPS
+        echo "CONFIG_FIRMWARE_INCLUDE_TUNSAFE=n" >> .config #TUNSAFE
+        
+        echo "CONFIG_FIRMWARE_INCLUDE_ZEROTIER=n" >> .config #zerotier ~1.3M
+        echo "CONFIG_FIRMWARE_INCLUDE_ALDRIVER=n" >> .config #阿里云盘
+        sudo ./clear_tree
+        sudo ./build_firmware_modify $PID_NAME 0
+        sudo mv -f images/*.trx /opt/images/
+    - name : Upload packages
+      uses: actions/upload-artifact@master
+      if: ${{ github.event_name != 'release' && success() }}
+      with:
+        name: Padavan-${{ env.PID_NAME }}
+        path: /opt/images/*.trx
+    - name: Upload images to Releases
+      if: ${{ github.event_name != 'release' && success() }}
+      uses: svenstaro/upload-release-action@2.2.1
+      with:
+        repo_token: ${{ secrets.workflow_token }}
+        file: /opt/images/*.trx
+        release_name: Padavan-${{ env.PID_NAME }}
+        tag: ${{ env.PID_NAME }}
+        overwrite: true
+        file_glob: true
